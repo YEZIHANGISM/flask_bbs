@@ -10,9 +10,9 @@ from flask import (
 )
 from flask_mail import Message
 from .forms import LoginForm, SetPwdForm, VerifyEmailForm
-from .models import CMSUser
-from exts import db, mail
-from .decorators import login_required
+from .models import CMSUser, CMSPermission
+from exts import db
+from .decorators import login_required, permission_required
 from utils import restful
 from utils import send_email
 from utils import cache
@@ -24,31 +24,85 @@ import random
 
 bp = Blueprint("cms", __name__, url_prefix="/cms")
 
-
+# =================== FRONT =======================
 @bp.route("/", endpoint="home")
 @login_required
 def home():
+    """前台首页"""
     return render_template("cms/cms_base.html")
 
+
+# =================== COMMON =======================
 @bp.route("/logout/", endpoint="logout")
 @login_required
 def logout():
+    """注销"""
     del session[config.CMS_USER_ID]
     return redirect(url_for("cms.login"))
 
+
+# =================== CMS =======================
 @bp.route("/index/", endpoint="index")
 @login_required
+@permission_required(CMSPermission.VISITOR)
 def index():
-    return render_template("cms/index.html")
+    """cms首页"""
+    return render_template("cms/cms_index.html")
 
 @bp.route("/profile/", endpoint="profile", methods=["GET",])
 @login_required
+@permission_required(CMSPermission.VISITOR)
 def profile():
-    return render_template("cms/profile.html")
+    """cms个人中心"""
+    return render_template("cms/cms_profile.html")
+
+@bp.route("/posts/", endpoint="posts")
+@login_required
+@permission_required(CMSPermission.POSTER)
+def posts():
+    """cms帖子管理"""
+    return render_template("cms/cms_posts.html")
+
+@bp.route("/comments/", endpoint="comments")
+@login_required
+@permission_required(CMSPermission.COMMENTER)
+def comments():
+    """cms评论管理"""
+    return render_template("cms/cms_comments.html")
+
+@bp.route("/boards/", endpoint="boards")
+@login_required
+@permission_required(CMSPermission.BOARDER)
+def boards():
+    """cms板块管理"""
+    return render_template("cms/cms_boards.html")
+
+@bp.route("/fusers/", endpoint="fusers")
+@login_required
+@permission_required(CMSPermission.FRONTUSER)
+def fusers():
+    """cms前台用户管理"""
+    return render_template("cms/cms_frontuser.html")
+
+@bp.route("/cmsusers/", endpoint="cmsusers")
+@login_required
+@permission_required(CMSPermission.CMSUSER)
+def cmsusers():
+    """cms用户管理"""
+    return render_template("cms/cms_cmsuser.html")
+
+@bp.route("/roles/", endpoint="cmsroles")
+@login_required
+@permission_required(CMSPermission.ALL_PERMISSION)
+def cmsroles():
+    """cms组管理"""
+    return render_template("cms/cms_roles.html")
 
 @bp.route("/email_captcha/", endpoint="email_capthca")
 @login_required
+@permission_required(CMSPermission.VISITOR)
 def email_captcha():
+    """验证码"""
     email = request.args.get("email")
     if not email:
         return restful.param_error(message="请传递参数")
@@ -77,7 +131,7 @@ class SetEmailView(views.MethodView):
     decorators = [login_required]
 
     def get(self):
-        return render_template("cms/setemail.html")
+        return render_template("cms/cms_setemail.html")
 
     def post(self):
         form = VerifyEmailForm(request.form)
@@ -93,7 +147,7 @@ class SetPwdView(views.MethodView):
     decorators = [login_required]
 
     def get(self, error=None, message=None):
-        return render_template("cms/setpwd.html", error=error, message=message)
+        return render_template("cms/cms_setpwd.html", error=error, message=message)
 
     def post(self):
         form = SetPwdForm(request.form)
@@ -117,7 +171,7 @@ class SetPwdView(views.MethodView):
 
 class LoginView(views.MethodView):
     def get(self, error=None):
-        return render_template("cms/login.html", error=error)
+        return render_template("cms/cms_login.html", error=error)
 
     def post(self):
         form = LoginForm(request.form)
