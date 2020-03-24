@@ -3,6 +3,7 @@ from flask_migrate import MigrateCommand,Migrate
 from app import create_app
 from exts import db
 from apps.cms import models as cms_models
+from apps.front import models as front_models
 
 
 CMSUser = cms_models.CMSUser
@@ -13,6 +14,18 @@ manager = Manager(app)
 Migrate(app,db)
 manager.add_command("db", MigrateCommand)
 
+
+# 创建前台用户
+@manager.option("-t", "--telephone", dest="telephone")
+@manager.option("-u", "--username", dest="username")
+@manager.option("-p", "--password", dest="password")
+def create_front_user(telephone, username, password):
+    user = front_models.FrontUser(telephone=telephone, username=username, password=password)
+    db.session.add(user)
+    db.session.commit()
+
+
+# 创建cms用户
 @manager.option("-u", "--username", dest="username")
 @manager.option("-p", "--password", dest="password")
 @manager.option("-e", "--email", dest="email")
@@ -22,6 +35,7 @@ def create_cms_user(username, password, email):
     db.session.commit()
     print("cms用户创建成功")
 
+# 初始化角色
 @manager.command
 def create_role():
     visitor = cms_models.CMSRole(name="访问者", intro="允许访问相关个人页面")
@@ -42,6 +56,7 @@ def create_role():
     db.session.add_all([visitor, operator, admin, developer])
     db.session.commit()
 
+# 添加用户至角色
 @manager.option("-e", "--email", dest="email")
 @manager.option("-n", "--name", dest="name")
 def add_user_to_role(email, name):

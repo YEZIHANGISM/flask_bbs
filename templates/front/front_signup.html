@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>注册</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for("static", filename="front/css/front_signup.css") }}" rel="stylesheet">
+
+
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="{{ url_for("front.index") }}">返回首页</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">欢迎注册</h3>
+      </div>
+
+      <div class="jumbotron">
+        <div class="signup-box">
+          <form class="form-container">
+            <div class="form-group">
+              <div class="input-group">
+                <input type="text" class="form-control" id="phone" placeholder="手机号码">
+                <span class="input-group-btn" id="get_captcha">
+                  <button class="btn btn-default">发送验证码</button>
+                </span>
+              </div>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="captcha" placeholder="短信验证码">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="username" placeholder="输入用户名">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="password" placeholder="输入密码">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="repeat_password" placeholder="确认密码">
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <input type="text" class="form-control" id="graph_captcha" placeholder="图形验证码">
+                <span class="input-group-btn">
+                  <img src="{{ url_for("front.graph_captcha") }}" id="gcaptcha" alt="图形验证码" style="cursor: pointer;">
+                </span>
+              </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">立即注册</button>
+            </div>
+          </form>
+          <a href="#">已有账号？登录</a>
+        </div>
+      </div>
+
+    </div>
+
+  <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <script src="{{ url_for("static", filename="front/js/param.js") }}"></script>
+  <script src="{{ url_for("static", filename="front/js/front_captcha.js") }}"></script>
+  </body>
+</html>
